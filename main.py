@@ -34,7 +34,6 @@ def get_activity_users(repo_owner, repo_name, activity_type, headers):
             print(f"Failed to fetch {activity_type} for {repo_owner}/{repo_name}. Status code: {response.status_code}")
             return [], ""
     else:
-        print("here")
         # Use the stargazers_list that you fetched earlier
         activity_users = filter_activity_users(user_key, timestamp_key, stargazers_list)
     
@@ -55,13 +54,14 @@ def filter_activity_users(user_key, timestamp_key, activity_data):
 
 def get_stargazers_with_pagination(repo_owner, repo_name, headers):
     stargazers_list = []
-    next_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/stargazers?page=1"
 
-    while next_url:
-        response = requests.get(next_url, headers=headers)
+    # Initialize the URL with the first page
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/stargazers"
+
+    while True:
+        response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
-            print(response.links)
             stargazers = response.json()
             if len(stargazers) == 0:
                 break  # No more stargazers to fetch
@@ -73,12 +73,12 @@ def get_stargazers_with_pagination(repo_owner, repo_name, headers):
                 }
                 stargazers_list.append(stargazers_dict)
 
-            # Check if there is a 'next' URL in the response headers for pagination
-            if 'next' in response.links:
-                next_url = response.links['next']['url']
-                print(next_url)
+            # Check for the "next" link in the response headers
+            next_link = response.links.get('next')
+            if next_link:
+                url = next_link['url']  # Update the URL to the next page
             else:
-                next_url = None  # No more pages to fetch
+                break  # No more pages to fetch
 
         else:
             print(f"Failed to fetch stargazers for {repo_owner}/{repo_name}. Status code: {response.status_code}")
@@ -119,7 +119,7 @@ slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL", "")
 github_authorization_token = os.getenv("GITHUB_AUTH_TOKEN", "")
 
 headers = {
-    "Accept": "application/vnd.github.v3+json",
+    "Accept": "application/vnd.github.star+json",
     "Authorization": f"token {github_authorization_token}"
 }
 

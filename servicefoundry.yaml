@@ -3,6 +3,8 @@ env:
     SeldonIO/seldon-core/forks,bentoml/BentoML/forks,allegroai/clearml/forks,huggingface/text-generation-inference/forks,kubernetes/kubernetes/forks,openai/chatgpt-retrieval-plugin/stargazers,openai/chatgpt-retrieval-plugin/pull_requests,artidoro/qlora/stargazers,artidoro/qlora/pull_requests
   SLACK_WEBHOOK_URL: >-
     tfy-secret://truefoundry:github-tracker:webhook_url
+  GITHUB_AUTH_TOKEN: >-
+    tfy-secret://truefoundry:github-tracker:github_auth_token 
 name: fork-tracker
 type: job
 image:
