@@ -1,0 +1,39 @@
+env:
+  REPOSITORY_LIST: >-
+    SeldonIO/seldon-core/forks,bentoml/BentoML/forks,allegroai/clearml/forks,huggingface/text-generation-inference/forks,kubernetes/kubernetes/forks,openai/chatgpt-retrieval-plugin/stargazers,openai/chatgpt-retrieval-plugin/pull_requests,artidoro/qlora/stargazers,artidoro/qlora/pull_requests
+  SLACK_WEBHOOK_URL: >-
+    https://hooks.slack.com/services/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
+name: fork-tracker
+type: job
+image:
+  type: build
+  build_spec:
+    type: tfy-python-buildpack
+    command: python main.py
+    pip_packages:
+      - requests
+    python_version: '3.9'
+    requirements_path: requirements.txt
+    build_context_path: ./
+  build_source:
+    ref: bebd481b8d0a9914dbb2c708f511c4b2c5925cfe
+    type: git
+    repo_url: >-
+      https://github.com/truefoundry/github-fork-tracker?id=clgf5sxvb000016qq7kaqgh1w
+    branch_name: main
+mounts: []
+retries: 0
+trigger:
+  type: scheduled
+  schedule: 0 9 * * *
+  timezone: Asia/Kolkata
+  concurrency_policy: Forbid
+resources:
+  node:
+    type: node_selector
+  cpu_limit: 0.5
+  cpu_request: 0.2
+  memory_limit: 500
+  memory_request: 200
+  ephemeral_storage_limit: 2000
+  ephemeral_storage_request: 1000
